@@ -1,54 +1,68 @@
 const vscode = require('vscode');
-const path = require('path');
-const fs = require('fs');
 
 function activate(context) {
 
-  // Helper to create webview
   function createWebview(title, folder) {
     const panel = vscode.window.createWebviewPanel(
-      folder,                  // Webview ID
-      title,                   // Title in VS Code tab
+      folder,
+      title,
       vscode.ViewColumn.Active,
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [vscode.Uri.file(path.join(context.extensionPath, 'webview'))]
+        localResourceRoots: [
+          vscode.Uri.joinPath(context.extensionUri, 'webview')
+        ]
       }
     );
 
-    const htmlPath = path.join(context.extensionPath, 'webview', folder, 'index.html');
-    let html = fs.readFileSync(htmlPath, 'utf8');
+    const webview = panel.webview;
 
-    const cssUri = panel.webview.asWebviewUri(vscode.Uri.file(
-      path.join(context.extensionPath, 'webview', folder, 'style.css')
-    ));
+    // Build paths
+    const htmlUri = vscode.Uri.joinPath(context.extensionUri, 'webview', folder, 'index.html');
+    const cssUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(context.extensionUri, 'webview', folder, 'style.css')
+    );
+    const jsUri = webview.asWebviewUri(
+      vscode.Uri.joinPath(context.extensionUri, 'webview', folder, 'script.js')
+    );
 
-    const jsUri = panel.webview.asWebviewUri(vscode.Uri.file(
-      path.join(context.extensionPath, 'webview', folder, 'script.js')
-    ));
+    let html = require('fs').readFileSync(htmlUri.fsPath, 'utf8');
 
-    // Replace placeholders in HTML with actual URIs
-    html = html.replace('${style}', cssUri).replace('${script}', jsUri);
+    const csp = `
+      <meta http-equiv="Content-Security-Policy"
+        content="
+          default-src 'none';
+          img-src ${webview.cspSource} https:;
+          style-src ${webview.cspSource} 'unsafe-inline';
+          script-src ${webview.cspSource} 'unsafe-inline';
+        ">
+    `;
 
-    panel.webview.html = html;
+    // Inject CSP before </head>
+    html = html.replace('</head>', `${csp}</head>`);
+
+    // Replace placeholders (global)
+    html = html
+      .replace(/\$\{style\}/g, cssUri)
+      .replace(/\$\{script\}/g, jsUri);
+
+    webview.html = html;
   }
 
-  // Register Snake command
+  // Commands
   context.subscriptions.push(
     vscode.commands.registerCommand('sas.Snake', () => {
       createWebview('Snake 🐍', 'snake');
     })
   );
 
-  // Register Tic-Tac-Toe command
   context.subscriptions.push(
     vscode.commands.registerCommand('sas.tic-tac-toe', () => {
       createWebview('Tic-tac-toe ❌🔴', 'tic-tac-toe');
     })
   );
 
-  // Register Termo command
   context.subscriptions.push(
     vscode.commands.registerCommand('sas.gtw', () => {
       createWebview('Guess-the-word 🐕', 'gtw');
@@ -56,7 +70,9 @@ function activate(context) {
   );
 }
 
-// Optional deactivate function
 function deactivate() {}
 
-module.exports = { activate, deactivate };
+module.exports = {
+  activate,
+  deactivate
+};

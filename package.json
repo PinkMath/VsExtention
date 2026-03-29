@@ -3,14 +3,18 @@
   "displayName": "SAS-games",
   "publisher": "sas-games",
   "description": "",
-  "version": "0.0.1",
+  "version": "1.0.2",
   "engines": {
     "vscode": "^1.110.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:sas.Snake",
+    "onCommand:sas.tic-tac-toe",
+    "onCommand:sas.gtw"
+  ],
   "main": "./extension.js",
   "contributes": {
     "commands": [

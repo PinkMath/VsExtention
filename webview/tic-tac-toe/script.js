@@ -298,7 +298,6 @@ function renderMenu() {
     btn.onclick = () => {
       selectedMode = btn.dataset.mode;
 
-      // 🎯 highlight selected button
       modeButtons.forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
     };
