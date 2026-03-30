@@ -1,11 +1,11 @@
 const vscode = acquireVsCodeApi();
 
 // ---------- DOM ELEMENTS ---------- //
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d', { alpha: true });
-const scoreEl = document.getElementById('score');
-const highEl = document.getElementById('high');
-const overlay = document.getElementById('overlay');
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d", { alpha: true });
+const scoreEl = document.getElementById("score");
+const highEl = document.getElementById("high");
+const overlay = document.getElementById("overlay");
 
 // ---------- CONSTANTS ---------- //
 const GRID_SIZE = 20;
@@ -23,7 +23,7 @@ const state = {
   running: false,
   particles: [],
   speed: 90,
-  lastUpdate: 0
+  lastUpdate: 0,
 };
 
 // ---------- CONFIGURATION ---------- //
@@ -31,44 +31,73 @@ const speeds = {
   slow: 140,
   normal: 90,
   fast: 60,
-  insane: 35
+  insane: 35,
 };
 
-let selectedSpeed = localStorage.getItem('snakeSpeed') || 'normal';
-let currentSkin = localStorage.getItem('snakeSkin') || 'classic';
-let highScore = Number(localStorage.getItem('snakeHigh')) || 0;
+let selectedSpeed = localStorage.getItem("snakeSpeed") || "normal";
+let currentSkin = localStorage.getItem("snakeSkin") || "classic";
+let highScore = Number(localStorage.getItem("snakeHigh")) || 0;
 
 highEl.textContent = highScore;
 
 // ---------- SKINS ---------- //
 const skins = {
   classic: { head: "#4ade80", body: "#22c55e", food: "#ef4444" },
-  neon:    { head: "#00ffff", body: "#00ffcc", food: "#ff00ff" },
-  fire:    { head: "#f97316", body: "#ef4444", food: "#fde047" },
-  purple:  { head: "#c084fc", body: "#a855f7", food: "#f472b6" },
-  rainbow: { head: "#ffffff", body: "rainbow", food: "#ffffff" }
+  neon: { head: "#00ffff", body: "#00ffcc", food: "#ff00ff" },
+  fire: { head: "#f97316", body: "#ef4444", food: "#fde047" },
+  purple: { head: "#c084fc", body: "#a855f7", food: "#f472b6" },
+  rainbow: { head: "#ffffff", body: "rainbow", food: "#ffffff" },
 };
 
 // ---------- AUDIO ---------- //
-const eatSound = new Audio('https://actions.google.com/sounds/v1/cartoon/pop.ogg');
-const dieSound = new Audio('https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg');
+const eatSound = new Audio(
+  "https://actions.google.com/sounds/v1/cartoon/pop.ogg",
+);
+const dieSound = new Audio(
+  "https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg",
+);
 
 let audioUnlocked = false;
 
 function unlockAudio() {
   if (audioUnlocked) return;
   audioUnlocked = true;
-  eatSound.play().then(() => eatSound.pause()).catch(() => {});
-  dieSound.play().then(() => dieSound.pause()).catch(() => {});
+  eatSound
+    .play()
+    .then(() => eatSound.pause())
+    .catch(() => {});
+  dieSound
+    .play()
+    .then(() => dieSound.pause())
+    .catch(() => {});
 }
 
 // Unlock audio on first user interaction
-['click', 'keydown', 'touchstart'].forEach(event => {
+["click", "keydown", "touchstart"].forEach((event) => {
   window.addEventListener(event, unlockAudio, { once: true });
 });
 
 // ---------- GAME LOGIC ---------- //
 function startGame() {
+  let count = 3;
+
+  state.running = false;
+  overlay.innerHTML = `<h1>${count}</h1>`;
+
+  const countdown = setInterval(() => {
+    count--;
+
+    if (count > 0) {
+      overlay.innerHTML = `<h1>${count}</h1>`;
+    } else {
+      clearInterval(countdown);
+      overlay.innerHTML = "";
+      initGame();
+    }
+  }, 1000);
+}
+
+function initGame() {
   state.snake = [{ x: 10, y: 10 }];
   state.dir = { x: 1, y: 0 };
   state.nextDir = { x: 1, y: 0 };
@@ -80,8 +109,8 @@ function startGame() {
   state.speed = speeds[selectedSpeed];
   state.lastUpdate = performance.now();
 
-  scoreEl.textContent = '0';
-  overlay.innerHTML = '';
+  scoreEl.textContent = "0";
+  overlay.innerHTML = "";
 
   requestAnimationFrame(gameLoop);
 }
@@ -91,9 +120,11 @@ function spawnFood() {
   do {
     pos = {
       x: Math.floor(Math.random() * GRID_SIZE),
-      y: Math.floor(Math.random() * GRID_SIZE)
+      y: Math.floor(Math.random() * GRID_SIZE),
     };
-  } while (state.snake.some(segment => segment.x === pos.x && segment.y === pos.y));
+  } while (
+    state.snake.some((segment) => segment.x === pos.x && segment.y === pos.y)
+  );
 
   return pos;
 }
@@ -107,44 +138,44 @@ function spawnParticles(x, y, color) {
       dy: (Math.random() - 0.5) * 6,
       life: 28,
       maxLife: 28,
-      color
+      color,
     });
   }
 }
 
 // ---------- INPUT HANDLING ---------- //
-document.addEventListener('keydown', e => {
-  if (!state.running && e.key === 'Enter') {
+document.addEventListener("keydown", (e) => {
+  if (!state.running && e.key === "Enter") {
     startGame();
     return;
   }
 
-  if (e.key === 'Escape') {
-    vscode.postMessage({ command: 'close' });
+  if (e.key === "Escape") {
+    vscode.postMessage({ command: "close" });
     return;
   }
 
   const d = state.nextDir;
 
   switch (e.key) {
-    case 'ArrowUp':
-    case 'w':
-    case 'W':
+    case "ArrowUp":
+    case "w":
+    case "W":
       if (d.y !== 1) state.nextDir = { x: 0, y: -1 };
       break;
-    case 'ArrowDown':
-    case 's':
-    case 'S':
+    case "ArrowDown":
+    case "s":
+    case "S":
       if (d.y !== -1) state.nextDir = { x: 0, y: 1 };
       break;
-    case 'ArrowLeft':
-    case 'a':
-    case 'A':
+    case "ArrowLeft":
+    case "a":
+    case "A":
       if (d.x !== 1) state.nextDir = { x: -1, y: 0 };
       break;
-    case 'ArrowRight':
-    case 'd':
-    case 'D':
+    case "ArrowRight":
+    case "d":
+    case "D":
       if (d.x !== -1) state.nextDir = { x: 1, y: 0 };
       break;
   }
@@ -169,14 +200,16 @@ function update() {
 
   const head = {
     x: state.snake[0].x + state.dir.x,
-    y: state.snake[0].y + state.dir.y
+    y: state.snake[0].y + state.dir.y,
   };
 
   // Collision detection
   if (
-    head.x < 0 || head.x >= GRID_SIZE ||
-    head.y < 0 || head.y >= GRID_SIZE ||
-    state.snake.some(s => s.x === head.x && s.y === head.y)
+    head.x < 0 ||
+    head.x >= GRID_SIZE ||
+    head.y < 0 ||
+    head.y >= GRID_SIZE ||
+    state.snake.some((s) => s.x === head.x && s.y === head.y)
   ) {
     dieSound.play().catch(() => {});
     gameOver();
@@ -201,21 +234,20 @@ function update() {
     if (Math.random() < 0.3 && !state.bonusFood) {
       state.bonusFood = spawnFood();
     }
-
-  } 
+  }
   // Check bonus food
-  else if (state.bonusFood && 
-           head.x === state.bonusFood.x && 
-           head.y === state.bonusFood.y) {
-    
+  else if (
+    state.bonusFood &&
+    head.x === state.bonusFood.x &&
+    head.y === state.bonusFood.y
+  ) {
     eatSound.play().catch(() => {});
     spawnParticles(head.x, head.y, "#fbbf24");
 
     state.score += 5;
     scoreEl.textContent = state.score;
     state.bonusFood = null;
-  } 
-  else {
+  } else {
     state.snake.pop();
   }
 }
@@ -254,7 +286,12 @@ function drawSquare(x, y, color, shadowBlur = 15) {
   ctx.fillStyle = color;
   ctx.shadowColor = color;
   ctx.shadowBlur = shadowBlur;
-  ctx.fillRect(x * CELL_SIZE + 1, y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+  ctx.fillRect(
+    x * CELL_SIZE + 1,
+    y * CELL_SIZE + 1,
+    CELL_SIZE - 2,
+    CELL_SIZE - 2,
+  );
   ctx.shadowBlur = 0;
 }
 
@@ -289,18 +326,18 @@ function drawSnake() {
 function drawParticles() {
   for (let i = state.particles.length - 1; i >= 0; i--) {
     const p = state.particles[i];
-    
+
     const alpha = p.life / p.maxLife;
     ctx.globalAlpha = alpha * 0.9;
     ctx.fillStyle = p.color;
-    
+
     const size = 5 * (p.life / p.maxLife);
-    ctx.fillRect(p.x - size/2, p.y - size/2, size, size);
+    ctx.fillRect(p.x - size / 2, p.y - size / 2, size, size);
 
     p.x += p.dx;
     p.y += p.dy;
     p.life--;
-    p.dx *= 0.98;   // friction
+    p.dx *= 0.98; // friction
     p.dy *= 0.98;
 
     if (p.life <= 0) {
@@ -316,7 +353,7 @@ function gameOver() {
 
   if (state.score > highScore) {
     highScore = state.score;
-    localStorage.setItem('snakeHigh', highScore);
+    localStorage.setItem("snakeHigh", highScore);
     highEl.textContent = highScore;
   }
 
@@ -346,38 +383,47 @@ function renderMenu() {
   `;
 
   // Render speed buttons
-  const speedContainer = document.getElementById('speed-options');
-  speedContainer.innerHTML = Object.keys(speeds).map(speed => `
+  const speedContainer = document.getElementById("speed-options");
+  speedContainer.innerHTML = Object.keys(speeds)
+    .map(
+      (speed) => `
     <button onclick="selectSpeed('${speed}')" 
-            class="option-btn ${selectedSpeed === speed ? 'active' : ''}">
+            class="option-btn ${selectedSpeed === speed ? "active" : ""}">
       ${speed}
     </button>
-  `).join('');
+  `,
+    )
+    .join("");
 
   // Render skin buttons
-  const skinContainer = document.getElementById('skin-options');
-  skinContainer.innerHTML = Object.keys(skins).map(name => {
-    const skin = skins[name];
-    const bg = skin.body === 'rainbow' ? 'linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff00ff)' : skin.body;
-    return `
+  const skinContainer = document.getElementById("skin-options");
+  skinContainer.innerHTML = Object.keys(skins)
+    .map((name) => {
+      const skin = skins[name];
+      const bg =
+        skin.body === "rainbow"
+          ? "linear-gradient(90deg, #ff0000, #ffff00, #00ff00, #00ffff, #ff00ff)"
+          : skin.body;
+      return `
       <button onclick="selectSkin('${name}')" 
-              class="skin-btn ${currentSkin === name ? 'active' : ''}"
+              class="skin-btn ${currentSkin === name ? "active" : ""}"
               style="background: ${bg};">
         ${name}
       </button>
     `;
-  }).join('');
+    })
+    .join("");
 }
 
 function selectSpeed(speed) {
   selectedSpeed = speed;
-  localStorage.setItem('snakeSpeed', speed);
+  localStorage.setItem("snakeSpeed", speed);
   renderMenu();
 }
 
 function selectSkin(name) {
   currentSkin = name;
-  localStorage.setItem('snakeSkin', name);
+  localStorage.setItem("snakeSkin", name);
   renderMenu();
 }
 

@@ -8,7 +8,7 @@
   --text-muted: #64748b;
   --button-bg: #1e2937;
   --button-hover: #334155;
-  --font-main: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-main: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
 /* ===== RESET & BASE ===== */
@@ -18,12 +18,11 @@
 
 body {
   margin: 0;
-  padding: 0;
+  padding: 10px;
   background: rgba(2, 6, 23, 0.85);
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   font-family: var(--font-main);
   color: var(--text-light);
   overflow: hidden;
@@ -33,7 +32,7 @@ body {
 .popup {
   background: var(--bg-popup);
   border: 3px solid var(--accent-green);
-  box-shadow: 
+  box-shadow:
     0 0 80px rgba(34, 197, 94, 0.4),
     inset 0 0 40px rgba(34, 197, 94, 0.08);
   padding: 20px 24px;
@@ -47,25 +46,40 @@ body {
 }
 
 .popup::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+  width: auto;
+  height: auto;
+  background: radial-gradient(
+    circle,
+    rgba(34, 197, 94, 0.06) 0%,
+    transparent 70%
+  );
   pointer-events: none;
   animation: subtleGlow 8s ease-in-out infinite;
 }
 
 @keyframes popupFadeIn {
-  from { opacity: 0; transform: scale(0.75) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.75) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 @keyframes subtleGlow {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 /* ===== CANVAS ===== */
@@ -75,7 +89,7 @@ canvas {
   border: 3px solid var(--accent-green);
   border-radius: 10px;
   background: var(--bg-dark);
-  box-shadow: 
+  box-shadow:
     0 0 40px rgba(34, 197, 94, 0.3),
     inset 0 0 20px rgba(0, 0, 0, 0.6);
   image-rendering: pixelated;
@@ -93,7 +107,10 @@ canvas {
   text-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
 }
 
-.hud span { font-family: monospace; letter-spacing: 1px; }
+.hud span {
+  font-family: monospace;
+  letter-spacing: 1px;
+}
 
 /* ===== OVERLAY ===== */
 #overlay {
@@ -155,7 +172,9 @@ button.active,
 button.selected {
   background: var(--accent-green);
   color: #0f172a;
-  box-shadow: 0 0 15px var(--accent-green), 0 0 25px rgba(34,197,94,0.5);
+  box-shadow:
+    0 0 15px var(--accent-green),
+    0 0 25px rgba(34, 197, 94, 0.5);
   transform: scale(1.08);
   font-weight: 700;
 }
@@ -165,7 +184,11 @@ button.selected {
   margin-top: 20px;
   padding: 14px 32px;
   font-size: 16px;
-  background: linear-gradient(90deg, var(--accent-green), var(--accent-green-light));
+  background: linear-gradient(
+    90deg,
+    var(--accent-green),
+    var(--accent-green-light)
+  );
   color: #0f172a;
   font-weight: 700;
   border-radius: 10px;
@@ -200,14 +223,48 @@ button.selected {
 }
 
 @keyframes rainbowShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+#overlay h1 {
+  font-size: 64px;
+  text-align: center;
+  animation: pop 0.3s ease;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 520px) {
-  .popup { width: 90vw; padding: 16px 20px; }
-  button { min-width: 70px; font-size: 13px; padding: 8px 14px; }
-  .start-btn { min-width: 140px; padding: 12px 24px; font-size: 15px; }
+  .popup {
+    width: 90vw;
+    padding: 16px 20px;
+  }
+  button {
+    min-width: 70px;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+  .start-btn {
+    min-width: 140px;
+    padding: 12px 24px;
+    font-size: 15px;
+  }
 }
