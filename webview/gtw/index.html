@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Termo Game</title>
-    <link rel="stylesheet" href="${style}">
+  <meta charset="UTF-8">
+  <title>Guess the word</title>
+  <link rel="stylesheet" href="${style}">
 </head>
 <body>
-    <div id="language-selector">
-        <label for="lang">Select Language:</label>
-        <select id="lang">
-            <option value="EN">English</option>
-            <option value="PT">Português</option>
-        </select>
-    </div>
 
-    <div id="star-container"></div>
+  <h1>Word Guess</h1>
 
-    <div id="game-board"></div>
+  <div id="controls">
+    <select id="lang">
+      <option value="EN">English</option>
+      <option value="PT">Português</option>
+    </select>
+    <button id="reset-btn">Reset</button>
+  </div>
 
-    <p id="message"></p>
-    <button id="reset-btn" style="display:none;">Reset Game</button>
+  <p id="message"></p>
 
-    <script src="${script}"></script>
+  <div id="game-board" class="board"></div>
+
+  <!-- Keyboard -->
+  <div id="keyboard" class="keyboard"></div>
+
+  <script src="${script}"></script>
 </body>
 </html>

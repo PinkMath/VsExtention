@@ -1,170 +1,194 @@
+/* --- Base --- */
 body {
-    margin: 0;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-    text-align: center;
-    background-color: #000;        
-    color: #eee;
-    overflow-x: hidden;
-    position: relative;
-    min-height: 100vh;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: #121213;
+  color: white;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-#star-container {
-    position: fixed;
-    inset: 0;                       
-    pointer-events: none;
-    overflow: hidden;
-    z-index: -1;
+/* --- Header --- */
+h1 {
+  margin: 20px 0 10px;
+  font-size: 32px;
+  letter-spacing: 2px;
 }
 
-.star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: twinkle 2s infinite ease-in-out;
+/* --- Controls --- */
+#controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.2;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.3);
-  }
+button, select {
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+  background: #3a3a3c;
+  color: white;
+  transition: 0.2s;
 }
 
-#language-selector {
-  margin-bottom: 15px;
-  font-size: 1.1rem;
+button:hover, select:hover {
+  background: #565758;
 }
 
-#game-board {
-    display: grid;
-    grid-template-rows: repeat(6, 90px);
-    grid-template-columns: repeat(6, 90px); 
-    gap: 8px;
-    justify-content: center;
-    margin: 0 auto 20px;
-    max-width: 100%;
-}
-
-.cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 90px;
-    height: 90px;
-    border: 2.5px solid #555;
-    font-weight: bold;
-    font-size: 40px;
-    text-transform: uppercase;
-    background-color: #fffde7;
-    color: #808080;
-    cursor: default;
-    position: relative;
-    transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.cell.flip {
-  transform: rotateX(90deg);
-}
-
-.correct {
-    background-color: #6aaa64;
-    color: #fff;
-    border-color: #6aaa64;
-}
-
-.present {
-    background-color: #c9b458;
-    color: #fff;
-    border-color: #c9b458;
-}
-
-.absent {
-    background-color: #3a3a3c;
-    color: #fff;
-    border-color: #3a3a3c;
-}
-
-.cell.focus {
-  background-color: #b3b3b3;
-}
-
+/* --- Message --- */
 #message {
-  margin-top: 20px;
+  height: 24px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  opacity: 0.9;
+}
+
+/* --- Board --- */
+.board {
+  display: grid;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Cells */
+.cell {
+  width: 62px;
+  height: 62px;
+  border: 2px solid #3a3a3c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
   font-weight: bold;
-  min-height: 28px;
-  font-size: 1.25rem;
+  text-transform: uppercase;
+  background-color: #121213;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-#reset-btn {
-    margin-top: 15px;
-    padding: 14px 28px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #f9d71c;
-    color: #121213;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+/* Active cell */
+.cell.focus {
+  border-color: #878a8c;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
 }
 
-#reset-btn:hover {
-    background-color: #d4b300;
-    transform: scale(1.05); 
+/* States */
+.cell.correct {
+  background-color: #538d4e;
+  border-color: #538d4e;
 }
 
-@media (max-width: 768px) {
-    #game-board {
-        grid-template-rows: repeat(6, 65px);
-    }
-
-    .cell {
-        width: 65px;
-        height: 65px;
-        font-size: 28px;
-        border-width: 2px;
-    }
-
-    .cell.focus {
-        border-bottom-width: 4px;
-    }
+.cell.present {
+  background-color: #b59f3b;
+  border-color: #b59f3b;
 }
 
-@media (max-width: 480px) {
-    #game-board {
-        grid-template-rows: repeat(6, 52px);
-    }
-
-    .cell {
-        width: 52px;
-        height: 52px;
-        font-size: 22px;
-        border-width: 1.5px;
-    }
-
-    .cell.focus {
-        border-bottom-width: 3px;
-    }
+.cell.absent {
+  background-color: #3a3a3c;
+  border-color: #3a3a3c;
 }
 
-@media (max-width: 360px) {
-    #game-board {
-        grid-template-rows: repeat(6, 46px);
-        grid-template-columns: repeat(6, 46px);
-        gap: 2px;
-    }
+/* --- Animations --- */
+.cell.flip {
+  animation: flip 0.4s ease;
+}
 
-    .cell {
-        width: 46px;
-        height: 46px;
-        font-size: 20px;
-    }
+@keyframes flip {
+  0% { transform: rotateX(0); }
+  50% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0); }
+}
+
+/* Optional shake (future use) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.cell.shake {
+  animation: shake 0.3s;
+}
+
+/* --- Keyboard --- */
+.keyboard {
+  max-width: 600px;
+  width: 100%;
+  padding: 10px;
+}
+
+/* Rows */
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+/* Keys */
+.key {
+  flex: 1;
+  max-width: 45px;
+  padding: 12px 0;
+  border-radius: 6px;
+  border: none;
+  background: #818384;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.key:hover {
+  background: #9ea0a3;
+  transform: translateY(-1px);
+}
+
+.key:active {
+  transform: scale(0.95);
+}
+
+/* Special keys */
+.key[data-key="ENTER"],
+.key[data-key="BACK"] {
+  max-width: 70px;
+  font-size: 12px;
+}
+
+/* Key states */
+.key.correct {
+  background-color: #538d4e;
+}
+
+.key.present {
+  background-color: #b59f3b;
+}
+
+.key.absent {
+  background-color: #3a3a3c;
+}
+
+/* --- Responsive --- */
+@media (max-width: 500px) {
+  .cell {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+
+  .key {
+    max-width: 32px;
+    padding: 10px 0;
+    font-size: 12px;
+  }
+
+  .key[data-key="ENTER"],
+  .key[data-key="BACK"] {
+    max-width: 55px;
+  }
 }

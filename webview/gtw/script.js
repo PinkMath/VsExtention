@@ -1,24 +1,10 @@
-// Expanded word lists
+// --- Word Lists ---
 const words = {
-    EN: [
-        "APPLE","HOUSE","PLANT","BRAVE","LIGHT","WORLD","NIGHT","WATER","MONEY","SMART",
-        "TRAIN","FRUIT","GREEN","STORM","SOUND","BREAD","CHAIR","DRINK","SWEET","TABLE",
-        "HEART","RIVER","CLOUD","STONE","MUSIC","PARTY","FIGHT","EARTH","PLANE","SHEEP",
-        "GRASS","BRICK","SMILE","LAUGH","DREAM","SLEEP","POWER","SHINE","FLAME","GLASS",
-        "CROWN","SWORD","QUEST","MAGIC","OCEAN","BEACH","SHELL","WHEEL","TRACK","SPEED",
-        "SCORE","LEVEL","MATCH","GUESS","WORDS","INPUT","CLICK","PRESS","START","RESET"
-    ],
-
-    PT: [
-        "CASAS","LIVRO","PLANO","FORTE","LUZES","MUNDO","NOITE","AGUAS","SABER","FALAR",
-        "TRENO","FRUTA","VERDE","TEMPO","SONHO","PAOES","CADEI","BEBER","DOCES","MESAS",
-        "CORAC","RIOES","NUVEM","PEDRA","MUSCA","FESTA","LUTAR","TERRA","PRAIA","AREIA",
-        "MARTE","VENUS","PLUTO","ESTRE","BRISA","VENTO","CHUVA","NEVAR","GELO","CALOR",
-        "AMIGO","AMIGA","FAMIL","FILHO","FILHA","JOGAR","GANHO","PERDA","NIVEL","PONTO",
-        "DADOS","TEXTO","LETRA","PALAV","DIGIT","CLICA","BOTAO","INICI","RESET"
-    ]
+    EN: ["APPLE","HOUSE","PLANT","BRAVE","LIGHT","WORLD","NIGHT","WATER","MONEY","SMART","TRAIN","FRUIT","GREEN","STORM","SOUND","BREAD","CHAIR","DRINK","SWEET","TABLE","HEART","RIVER","CLOUD","STONE","MUSIC","PARTY","FIGHT","EARTH","PLANE","SHEEP","GRASS","BRICK","SMILE","LAUGH","DREAM","SLEEP","POWER","SHINE","FLAME","GLASS","CROWN","SWORD","QUEST","MAGIC","OCEAN","BEACH","SHELL","WHEEL","TRACK","SPEED","SCORE","LEVEL","MATCH","GUESS","WORDS","INPUT","CLICK","PRESS","START","RESET"],
+    PT: ["CASAS","LIVRO","PLANO","FORTE","LUZES","MUNDO","NOITE","AGUAS","SABER","FALAR","TRENO","FRUTA","VERDE","TEMPO","SONHO","PAOES","CADEI","BEBER","DOCES","MESAS","CORAC","RIOES","NUVEM","PEDRA","MUSCA","FESTA","LUTAR","TERRA","PRAIA","AREIA","MARTE","VENUS","PLUTO","ESTRE","BRISA","VENTO","CHUVA","NEVAR","GELO","CALOR","AMIGO","AMIGA","FAMIL","FILHO","FILHA","JOGAR","GANHO","PERDA","NIVEL","PONTO","DADOS","TEXTO","LETRA","PALAV","DIGIT","CLICA","BOTAO","INICI","RESET"]
 };
 
+// --- Variables ---
 let language = "EN";
 let answer = "";
 let currentRow = 0;
@@ -30,22 +16,25 @@ const board = document.getElementById("game-board");
 const message = document.getElementById("message");
 const langSelector = document.getElementById("lang");
 const resetBtn = document.getElementById("reset-btn");
+const keyboardContainer = document.getElementById("keyboard");
 
-// Initialize board
+// --- Initialize Board ---
 function initBoard() {
     board.innerHTML = "";
+    keyboardContainer.innerHTML = "";
     currentRow = 0;
     currentCol = 0;
     gameOver = false;
     message.textContent = "";
     resetBtn.style.display = "none";
+
     answer = words[language][Math.floor(Math.random() * words[language].length)];
-
     const rows = 6;
-    const cols = answer.length; 
+    const cols = answer.length;
 
-    board.style.gridTemplateColumns = `repeat(${cols}, 90px)`;  
+    board.style.gridTemplateColumns = `repeat(${cols}, 90px)`;
 
+    // create cells
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
             const cell = document.createElement("div");
@@ -54,10 +43,14 @@ function initBoard() {
             board.appendChild(cell);
         }
     }
+
+    // create on-screen keyboard
+    createKeyboard();
+
     updateFocus();
 }
 
-// Update focus class on current cell
+// --- Update Focus ---
 function updateFocus() {
     document.querySelectorAll(".cell").forEach(cell => cell.classList.remove("focus"));
     if (!gameOver) {
@@ -66,29 +59,90 @@ function updateFocus() {
     }
 }
 
-// Handle key input
-document.addEventListener("keydown", (e) => {
+// --- Handle Keyboard Input ---
+function handleInput(letter) {
     if (gameOver) return;
     const cols = answer.length;
-
-    if (e.key === "Backspace") {
+    if (letter === "BACK") {
         if (currentCol > 0) {
             currentCol--;
             document.getElementById(`cell-${currentRow}-${currentCol}`).textContent = "";
             updateFocus();
         }
-    } else if (e.key === "Enter") {
+    } else if (letter === "ENTER") {
         if (currentCol === cols) submitGuess();
-    } else if (/^[a-zA-Z]$/.test(e.key)) {
+    } else if (/^[A-Z]$/.test(letter)) {
         if (currentCol < cols) {
-            document.getElementById(`cell-${currentRow}-${currentCol}`).textContent = e.key.toUpperCase();
+            document.getElementById(`cell-${currentRow}-${currentCol}`).textContent = letter;
             currentCol++;
             updateFocus();
         }
     }
-});
+}
 
-// Submit guess with flip animation
+// --- On-Screen Keyboard ---
+function createKeyboard() {
+    const layout = [
+        "QWERTYUIOP",
+        "ASDFGHJKL",
+        "ENTERZXCVBNMBACK"
+    ];
+
+    layout.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.classList.add("keyboard-row");
+
+        let i = 0;
+        while (i < row.length) {
+            let key;
+
+            if (row.startsWith("ENTER", i)) {
+                key = "ENTER";
+                i += 5;
+            } else if (row.startsWith("BACK", i)) {
+                key = "BACK";
+                i += 4;
+            } else {
+                key = row[i];
+                i++;
+            }
+
+            const button = document.createElement("button");
+            button.textContent = key === "BACK" ? "⌫" : key;
+            button.classList.add("key");
+            button.setAttribute("data-key", key);
+
+            button.addEventListener("click", () => handleInput(key));
+            rowDiv.appendChild(button);
+        }
+
+        keyboardContainer.appendChild(rowDiv);
+    });
+}
+
+function updateKeyboard(letter, status) {
+    const key = document.querySelector(`[data-key="${letter}"]`);
+    if (!key) return;
+
+    // Priority: correct > present > absent
+    if (key.classList.contains("correct")) return;
+
+    if (status === "correct") {
+        key.classList.remove("present", "absent");
+        key.classList.add("correct");
+    } else if (status === "present") {
+        if (!key.classList.contains("correct")) {
+            key.classList.remove("absent");
+            key.classList.add("present");
+        }
+    } else if (status === "absent") {
+        if (!key.classList.contains("correct") && !key.classList.contains("present")) {
+            key.classList.add("absent");
+        }
+    }
+}
+
+// --- Submit Guess ---
 function submitGuess() {
     const guess = [];
     const cols = answer.length;
@@ -98,16 +152,32 @@ function submitGuess() {
     const guessStr = guess.join("");
     if (guessStr.length !== cols) return;
 
+    // flip animation + color
     for (let i = 0; i < cols; i++) {
-        const cell = document.getElementById(`cell-${currentRow}-${i}`);
+    const cell = document.getElementById(`cell-${currentRow}-${i}`);
+
+    setTimeout(() => {
+        cell.classList.add("flip");
+
         setTimeout(() => {
-            cell.classList.add("flip");
-            setTimeout(() => {
-                if (guess[i] === answer[i]) cell.classList.add("correct");
-                else if (answer.includes(guess[i])) cell.classList.add("present");
-                else cell.classList.add("absent");
+            let status;
+
+            if (guess[i] === answer[i]) {
+                status = "correct";
+                cell.classList.add("correct");
+            } else if (answer.includes(guess[i])) {
+                status = "present";
+                cell.classList.add("present");
+            } else {
+                status = "absent";
+                cell.classList.add("absent");
+            }
+
+                updateKeyboard(guess[i], status);
+    
                 cell.classList.remove("flip");
             }, 150);
+    
         }, i * 200);
     }
 
@@ -126,52 +196,23 @@ function submitGuess() {
     }, cols * 200 + 200);
 }
 
-// End game
+// --- End Game ---
 function endGame() {
     gameOver = true;
     resetBtn.style.display = "inline-block";
 }
 
-// Reset button
-resetBtn.addEventListener("click", () => {
-    initBoard();
-});
-
-// Language change
-langSelector.addEventListener("change", (e) => {
+// --- Event Listeners ---
+resetBtn.addEventListener("click", initBoard);
+langSelector.addEventListener("change", e => {
     language = e.target.value;
     initBoard();
 });
-
-function createStars(numStars = 150) {
-    const container = document.getElementById("star-container");
-    container.innerHTML = ""; 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    for (let i = 0; i < numStars; i++) {
-        const star = document.createElement("div");
-        star.classList.add("star");
-
-        const size = Math.random() * 2 + 1;
-        star.style.width = `${size}px`;
-        star.style.height = `${size}px`;
-
-        star.style.top = `${Math.random() * height}px`;
-        star.style.left = `${Math.random() * width}px`;
-
-        star.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        star.style.animationDelay = `${Math.random() * 5}s`;
-
-        container.appendChild(star);
-    }
-}
-
-// Create stars once and update on resize
-createStars();
-window.addEventListener("resize", () => {
-    createStars();
+document.addEventListener("keydown", (e) => {
+    if (/^[a-zA-Z]$/.test(e.key)) handleInput(e.key.toUpperCase());
+    else if (e.key === "Enter") handleInput("ENTER");
+    else if (e.key === "Backspace") handleInput("BACK");
 });
 
-// Start game
+// --- Start Game ---
 initBoard();

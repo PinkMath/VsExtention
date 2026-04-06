@@ -15,6 +15,9 @@ function initGame() {
   board.innerHTML = "";
   moves = 0;
   movesDisplay.textContent = "Moves: 0";
+  firstCard = null;
+  secondCard = null;
+  lockBoard = false;
 
   const cardValues = [...icons, ...icons];
   shuffle(cardValues);
@@ -51,7 +54,8 @@ function shuffle(array) {
 }
 
 function flipCard() {
-  if (lockBoard) return;
+  // Don't allow flipping if the board is locked or card is already matched
+  if (lockBoard || this.classList.contains("matched")) return;
   if (this === firstCard) return;
 
   this.classList.add("flipped");
@@ -88,7 +92,8 @@ function checkMatch() {
 }
 
 function resetTurn() {
-  [firstCard, secondCard] = [null, null];
+  firstCard = null;
+  secondCard = null;
   lockBoard = false;
 }
 
