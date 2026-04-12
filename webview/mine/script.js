@@ -242,6 +242,48 @@ function toggleFlag(e) {
 }
 
 // --- EXPLOSION (CHAIN EFFECT) ---
+
+function createParticles(x, y) {
+  const particleCount = 18;
+
+  for (let i = 0; i < particleCount; i++) {
+    const p = document.createElement("div");
+    p.classList.add("particle");
+
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 4 + 2;
+
+    const dx = Math.cos(angle) * speed;
+    const dy = Math.sin(angle) * speed;
+
+    p.style.left = `${x}px`;
+    p.style.top = `${y}px`;
+
+    p.style.setProperty("--dx", dx);
+    p.style.setProperty("--dy", dy);
+
+    p.style.background = `hsl(${Math.random()*30}, 100%, 50%)`; // fiery colors
+
+    document.body.appendChild(p);
+
+    document.body.classList.add("shake");
+    setTimeout(() => document.body.classList.remove("shake"), 300);
+
+    setTimeout(() => p.remove(), 600);
+  }
+}
+
+function explodeCell(cell) {
+  const rect = cell.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  cell.classList.add("boom");
+
+  createParticles(centerX, centerY);
+}
+
 function triggerExplosion(startCell) {
   gameOver = true;
   clearInterval(timerInterval);
@@ -263,15 +305,12 @@ function triggerExplosion(startCell) {
   });
 
   bombs.forEach((b, i) => {
-    setTimeout(() => {
-      b.classList.add("boom");
-      b.textContent = "💣";
-    }, i * 120);
+    setTimeout(() => explodeCell(b), i * 80);
   });
 
   setTimeout(() => {
     showEndScreen("💥 Game Over! 💥");
-  }, bombs.length * 120 + 300);
+  }, bombs.length * 80 + 400);
 }
 
 // --- WIN ---

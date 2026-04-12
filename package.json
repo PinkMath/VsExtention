@@ -3,7 +3,7 @@
   "displayName": "SAS-games",
   "publisher": "sas-games",
   "description": "",
-  "version": "2.5.0",
+  "version": "2.5.2",
   "engines": {
     "vscode": "^1.110.0"
   },
